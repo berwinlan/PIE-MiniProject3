@@ -1,8 +1,8 @@
 #include <Adafruit_MotorShield.h>
 
-#define BAUD_RATE = 115200;
+#define BAUD_RATE 115200
 
-#define LEFT_MOTOR_PIN 1    // M1
+#define LEFT_MOTOR_PIN 3    // M1
 #define RIGHT_MOTOR_PIN 2   // M2
 #define LEFT_SENSOR_PIN     // TODO
 #define RIGHT_SENSOR_PIN    // TODO
@@ -20,7 +20,7 @@ enum states {     // enumerate states
     LEFT,
     RIGHT,
     STOP
-}
+};
 
 states current_state;   // initialize variable to store current state
 
@@ -29,8 +29,8 @@ void setup() {
   Serial.begin(BAUD_RATE);     // set up Serial library
 
   // set up sensors - technically not necessary, since digital pins default to input
-  pinMode(LEFT_SENSOR_PIN, INPUT);
-  pinMode(LEFT_SENSOR_PIN, INPUT);
+//  pinMode(LEFT_SENSOR_PIN, INPUT);
+//  pinMode(RIGHT_SENSOR_PIN, INPUT);
 
   // code below from DCMotorTest example code
   if (!AFMS.begin()) {         // create with the default frequency 1.6KHz
@@ -55,8 +55,10 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-  int leftSensorValue = min(min(analogRead(LEFT_SENSOR_PIN), analogRead(LEFT_SENSOR_PIN)), analogRead(LEFT_SENSOR_PIN));
-  int rightSensorValue = min(min(analogRead(RIGHT_SENSOR_PIN), analogRead(RIGHT_SENSOR_PIN)), analogRead(RIGHT_SENSOR_PIN));
+//  int leftSensorValue = min(min(analogRead(LEFT_SENSOR_PIN), analogRead(LEFT_SENSOR_PIN)), analogRead(LEFT_SENSOR_PIN));
+//  int rightSensorValue = min(min(analogRead(RIGHT_SENSOR_PIN), analogRead(RIGHT_SENSOR_PIN)), analogRead(RIGHT_SENSOR_PIN));
+  int leftSensorValue = analogRead(LEFT_SENSOR_PIN);
+  int rightSensorValue = analogRead(RIGHT_SENSOR_PIN);
   Serial.print("left sensor: ");
   Serial.print(leftSensorValue);
   Serial.print(", right sensor: ");
