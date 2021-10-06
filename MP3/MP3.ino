@@ -11,17 +11,15 @@ For use with the Adafruit Motor Shield v2
 
 #define BAUD_RATE 115200
 
-#define LEFT_MOTOR_PIN 3    // M1
+#define LEFT_MOTOR_PIN 3    // M3
 #define RIGHT_MOTOR_PIN 2   // M2
 #define LEFT_SENSOR_PIN A0    // Analog pin 0
 #define RIGHT_SENSOR_PIN A1   // Analog pin 1
 
-#define INITIAL_SPEED 150   // initial speed of wheels at setup()
+#define INITIAL_SPEED 50   // initial speed of wheels at setup()
 
 // Create the motor shield object with the default I2C address
 Adafruit_MotorShield AFMS = Adafruit_MotorShield();
-// Or, create it with a different I2C address (say for stacking)
-// Adafruit_MotorShield AFMS = Adafruit_MotorShield(0x61);
 
 // Select which 'port' M1, M2, M3 or M4.
 Adafruit_DCMotor *leftMotor = AFMS.getMotor(LEFT_MOTOR_PIN);   // attach left motor
@@ -46,7 +44,7 @@ void setup() {
   rightMotor->setSpeed(INITIAL_SPEED);
 
   leftMotor->run(FORWARD);
-  rightMotor->run(FORWARD);
+  rightMotor->run(BACKWARD);
   
   // turn on motors
   leftMotor->run(RELEASE);
@@ -62,33 +60,6 @@ void loop() {
   Serial.print(", right sensor: ");
   Serial.println(rightSensorValue);
 
-//  uint8_t i;
-//
-//  Serial.print("tick");
-//
-//  myMotor->run(FORWARD);
-//  for (i=0; i<255; i++) {
-//    myMotor->setSpeed(i);
-//    delay(10);
-//  }
-//  for (i=255; i!=0; i--) {
-//    myMotor->setSpeed(i);
-//    delay(10);
-//  }
-//
-//  Serial.print("tock");
-//
-//  myMotor->run(BACKWARD);
-//  for (i=0; i<255; i++) {
-//    myMotor->setSpeed(i);
-//    delay(10);
-//  }
-//  for (i=255; i!=0; i--) {
-//    myMotor->setSpeed(i);
-//    delay(10);
-//  }
-//
-//  Serial.print("tech");
-//  myMotor->run(RELEASE);
-//  delay(1000);
+  leftMotor->run(FORWARD);
+  rightMotor->run(BACKWARD);
 }
