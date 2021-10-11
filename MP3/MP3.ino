@@ -9,16 +9,17 @@ For use with the Adafruit Motor Shield v2
 
 #include <Adafruit_MotorShield.h>
 
-#define BAUD_RATE 115200
-// make sure Serial Monitor is set to "No line ending"
+// Define constants
+#define BAUD_RATE 115200      // make sure Serial Monitor is set to "No line ending"
 
-#define LEFT_MOTOR_PIN 3    // M3
-#define RIGHT_MOTOR_PIN 2   // M2
+#define LEFT_MOTOR_PIN 3      // M3
+#define RIGHT_MOTOR_PIN 2     // M2
 #define LEFT_SENSOR_PIN A0    // Analog pin 0
 #define RIGHT_SENSOR_PIN A1   // Analog pin 1
 
 #define INITIAL_SPEED 50   // initial speed of wheels at setup()
 
+// Initialize variables
 int incomingData;    // for incoming serial data
 
 // Create the motor shield object with the default I2C address
@@ -70,6 +71,7 @@ void loop() {
   rightMotor->run(BACKWARD);
 }
 
+// Receive data in the form "letterNumber" where letter = {p, i, d}
 void receiveData() {
   if (Serial.available() >= 2) {   // can change to Serial.available() >= {known input length}
     char letter = Serial.read();
