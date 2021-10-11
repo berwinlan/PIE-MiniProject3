@@ -10,6 +10,7 @@ For use with the Adafruit Motor Shield v2
 #include <Adafruit_MotorShield.h>
 
 #define BAUD_RATE 115200
+// make sure Serial Monitor is set to "No line ending"
 
 #define LEFT_MOTOR_PIN 3    // M3
 #define RIGHT_MOTOR_PIN 2   // M2
@@ -17,6 +18,8 @@ For use with the Adafruit Motor Shield v2
 #define RIGHT_SENSOR_PIN A1   // Analog pin 1
 
 #define INITIAL_SPEED 50   // initial speed of wheels at setup()
+
+int incomingData;    // for incoming serial data
 
 // Create the motor shield object with the default I2C address
 Adafruit_MotorShield AFMS = Adafruit_MotorShield();
@@ -52,13 +55,24 @@ void setup() {
 }
 
 void loop() {
+  // send data only when you receive data:
+  if (Serial.available() > 0) {
+    // read the incoming byte (0-255):
+    incomingData = Serial.parseFloat();
+
+    // say what you got:
+    Serial.print("I received: ");
+    Serial.println(incomingData, 5);
+  }
+
+
   int leftSensorValue = min(min(analogRead(LEFT_SENSOR_PIN), analogRead(LEFT_SENSOR_PIN)), analogRead(LEFT_SENSOR_PIN));
   int rightSensorValue = min(min(analogRead(RIGHT_SENSOR_PIN), analogRead(RIGHT_SENSOR_PIN)), analogRead(RIGHT_SENSOR_PIN));
 
-  Serial.print("left sensor: ");
-  Serial.print(leftSensorValue);
-  Serial.print(", right sensor: ");
-  Serial.println(rightSensorValue);
+//  Serial.print("left sensor: ");
+//  Serial.print(leftSensorValue);
+//  Serial.print(", right sensor: ");
+//  Serial.println(rightSensorValue);
 
   leftMotor->run(FORWARD);
   rightMotor->run(BACKWARD);
