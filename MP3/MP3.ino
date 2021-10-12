@@ -8,6 +8,7 @@ For use with the Adafruit Motor Shield v2
 */
 
 #include <Adafruit_MotorShield.h>
+//#include <PID_v1.h>
 
 // Define constants
 #define BAUD_RATE 115200      // make sure Serial Monitor is set to "No line ending"
@@ -19,8 +20,23 @@ For use with the Adafruit Motor Shield v2
 
 #define INITIAL_SPEED 50   // initial speed of wheels at setup()
 
+#define THRESHOLD 300       // TODO, threshold of tape vs. floor
+
 // Initialize variables
-int incomingData;    // for incoming serial data
+double incomingData;    // for incoming serial data
+
+// Initialize coefficients for tuning
+double kp = 0;
+double ki = 0;
+double kd = 0;
+
+// Track times
+unsigned long currentTime, previousTime;
+double elapsedTime;
+double currentError, previousError;
+
+// Track error
+double error, cumeError, rateError;
 
 // Create the motor shield object with the default I2C address
 Adafruit_MotorShield AFMS = Adafruit_MotorShield();
@@ -43,6 +59,9 @@ void setup() {
   }
   Serial.println("Motor Shield found.");
 
+  previousTime = millis();
+  previousError = 0;
+
   // Set the speed to start, from 0 (off) to 255 (max speed)
   leftMotor->setSpeed(INITIAL_SPEED);
   rightMotor->setSpeed(INITIAL_SPEED);
@@ -57,8 +76,6 @@ void setup() {
 
 void loop() {
 
-  receiveData();
-
   int leftSensorValue = min(min(analogRead(LEFT_SENSOR_PIN), analogRead(LEFT_SENSOR_PIN)), analogRead(LEFT_SENSOR_PIN));
   int rightSensorValue = min(min(analogRead(RIGHT_SENSOR_PIN), analogRead(RIGHT_SENSOR_PIN)), analogRead(RIGHT_SENSOR_PIN));
 
@@ -71,6 +88,24 @@ void loop() {
   rightMotor->run(BACKWARD);
 }
 
+// Compute PID
+double computePID(double input) {
+  currentTime = millis();
+  elapsedTime = double(currentTime - previousTime);
+
+  currentError = threshold - input;                 // compute error
+  cumeError += error * elapsedTime;                 // compute integral
+  rateError = (error - lastError) / elapsedTime;    // compute derivative
+
+  double diff = kp * error + ki * cumeError + kd * rateError;   // compute PID output
+
+  previousError = currentError;
+  previousTime = currentTime;
+
+  return diff;        // return PID output
+}
+
+// Dynamically tune PID with the Serial Monitor
 // Receive data in the form "letterNumber" where letter = {p, i, d}
 void receiveData() {
   if (Serial.available() >= 2) {   // can change to Serial.available() >= {known input length}
