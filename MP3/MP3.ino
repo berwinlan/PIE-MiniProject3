@@ -7,8 +7,10 @@ For use with the Adafruit Motor Shield v2
 ---->  http://www.adafruit.com/products/1438
 */
 
+#include <Wire.h>
 #include <Adafruit_MotorShield.h>
-//#include <PID_v1.h>
+#include "utility/Adafruit_MS_PWMServoDriver.h"
+#include <PID_v1.h>
 
 // Define constants
 #define BAUD_RATE 115200      // make sure Serial Monitor is set to "No line ending"
@@ -67,7 +69,7 @@ void setup() {
   rightMotor->setSpeed(INITIAL_SPEED);
 
   leftMotor->run(FORWARD);
-  rightMotor->run(BACKWARD);
+  rightMotor->run(FORWARD);
   
   // turn on motors
   leftMotor->run(RELEASE);
@@ -76,16 +78,18 @@ void setup() {
 
 void loop() {
 
-  int leftSensorValue = min(min(analogRead(LEFT_SENSOR_PIN), analogRead(LEFT_SENSOR_PIN)), analogRead(LEFT_SENSOR_PIN));
-  int rightSensorValue = min(min(analogRead(RIGHT_SENSOR_PIN), analogRead(RIGHT_SENSOR_PIN)), analogRead(RIGHT_SENSOR_PIN));
+  receiveData();
 
+//  int leftSensorValue = analogRead(LEFT_SENSOR_PIN);
+//  int rightSensorValue = analogRead(RIGHT_SENSOR_PIN);
+//
 //  Serial.print("left sensor: ");
 //  Serial.print(leftSensorValue);
 //  Serial.print(", right sensor: ");
 //  Serial.println(rightSensorValue);
 
   leftMotor->run(FORWARD);
-  rightMotor->run(BACKWARD);
+  rightMotor->run(FORWARD);
 }
 
 // Compute PID
@@ -93,9 +97,9 @@ double computePID(double input) {
   currentTime = millis();
   elapsedTime = double(currentTime - previousTime);
 
-  currentError = threshold - input;                 // compute error
+  currentError = THRESHOLD - input;                 // compute error
   cumeError += error * elapsedTime;                 // compute integral
-  rateError = (error - lastError) / elapsedTime;    // compute derivative
+  rateError = (error - previousError) / elapsedTime;    // compute derivative
 
   double diff = kp * error + ki * cumeError + kd * rateError;   // compute PID output
 
