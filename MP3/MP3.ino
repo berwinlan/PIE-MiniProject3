@@ -139,3 +139,40 @@ void receiveData() {
     }
   }
 }
+
+void receiveData2() {
+  if (Serial.available()) {
+    char ch = Serial.read();
+
+    if (ch == '\r') {
+      
+    }
+  }
+}
+
+// Helper function for receiveData
+void parseData(String command) {
+    switch (command) {
+      case 'p': incomingData = Serial.parseInt();
+        Serial.print("case: ");
+        Serial.print(command);
+        Serial.print(", data: ");
+        Serial.println(incomingData);
+        
+      case 'i': incomingData = Serial.parseInt();
+        Serial.print("case: ");
+        Serial.print(command);
+        Serial.print(", data: ");
+        Serial.println(incomingData);
+        
+      case 'd': incomingData = Serial.parseInt();
+        Serial.print("case: ");
+        Serial.print(command);
+        Serial.print(", data: ");
+        Serial.println(incomingData);
+
+      default: 
+        Serial.print("Unexpected command: ");
+        Serial.println(command);
+    }
+}
