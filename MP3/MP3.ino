@@ -24,8 +24,9 @@ For use with the Adafruit Motor Shield v2
 
 #define THRESHOLD 300       // TODO, threshold of tape vs. floor
 
-// Initialize variables
-double incomingData;    // for incoming serial data
+// Initialize variables for serial reading
+String command = "";    // for incoming serial data
+double incomingData;    // placeholder, will refactor/rewrite code later
 
 // Initialize coefficients for tuning
 double kp = 0;
@@ -49,13 +50,14 @@ Adafruit_DCMotor *rightMotor = AFMS.getMotor(RIGHT_MOTOR_PIN);  // attach right 
 
 void setup() {
   Serial.begin(BAUD_RATE);           // set up Serial library
+  Serial.setTimeout(1);
+
 
   // set up sensors - technically not necessary, since digital pins default to input
   pinMode(LEFT_SENSOR_PIN, INPUT);
   pinMode(RIGHT_SENSOR_PIN, INPUT);
 
   if (!AFMS.begin()) {         // create with the default frequency 1.6KHz
-  // if (!AFMS.begin(1000)) {  // OR with a different frequency, say 1KHz
     Serial.println("Could not find Motor Shield. Check wiring.");
     while (1);
   }
@@ -77,8 +79,19 @@ void setup() {
 }
 
 void loop() {
+  // Read data from serial monitor, with carriage return line ending
+  if (Serial.available()) {
+    char ch = Serial.read();
 
-  receiveData();
+    if (ch == '\r') {
+      parseData(command);
+      command = "";
+    } else {
+      command += ch;
+    }
+  }
+
+//  receiveData();
 
 //  int leftSensorValue = analogRead(LEFT_SENSOR_PIN);
 //  int rightSensorValue = analogRead(RIGHT_SENSOR_PIN);
@@ -111,68 +124,67 @@ double computePID(double input) {
 
 // Dynamically tune PID with the Serial Monitor
 // Receive data in the form "letterNumber" where letter = {p, i, d}
-void receiveData() {
-  if (Serial.available() >= 2) {   // can change to Serial.available() >= {known input length}
-    char letter = Serial.read();
-    switch (letter) {
-      case 'p': incomingData = Serial.parseInt();
-        Serial.print("case: ");
-        Serial.print(letter);
-        Serial.print(", data: ");
-        Serial.println(incomingData);
-        
-      case 'i': incomingData = Serial.parseInt();
-        Serial.print("case: ");
-        Serial.print(letter);
-        Serial.print(", data: ");
-        Serial.println(incomingData);
-        
-      case 'd': incomingData = Serial.parseInt();
-        Serial.print("case: ");
-        Serial.print(letter);
-        Serial.print(", data: ");
-        Serial.println(incomingData);
+//void receiveData() {
+//  if (Serial.available() >= 2) {   // can change to Serial.available() >= {known input length}
+//    char letter = Serial.read();
+//    switch (letter) {
+//      case 'p': incomingData = Serial.parseInt();
+//        Serial.print("case: ");
+//        Serial.print(letter);
+//        Serial.print(", data: ");
+//        Serial.println(incomingData);
+//        
+//      case 'i': incomingData = Serial.parseInt();
+//        Serial.print("case: ");
+//        Serial.print(letter);
+//        Serial.print(", data: ");
+//        Serial.println(incomingData);
+//        
+//      case 'd': incomingData = Serial.parseInt();
+//        Serial.print("case: ");
+//        Serial.print(letter);
+//        Serial.print(", data: ");
+//        Serial.println(incomingData);
+//
+//      default: 
+//        Serial.print("Unexpected command: ");
+//        Serial.println(letter);
+//    }
+//  }
+//}
+//
+//void receiveData2() {
+//  if (Serial.available()) {
+//    char ch = Serial.read();
+//
+//    if (ch == '\r') {
+//      
+//    }
+//  }
+//}
 
-      default: 
-        Serial.print("Unexpected command: ");
-        Serial.println(letter);
-    }
-  }
-}
-
-void receiveData2() {
-  if (Serial.available()) {
-    char ch = Serial.read();
-
-    if (ch == '\r') {
-      
-    }
-  }
-}
-
-// Helper function for receiveData
+//// Helper function for receiveData
 void parseData(String command) {
-    switch (command) {
-      case 'p': incomingData = Serial.parseInt();
-        Serial.print("case: ");
-        Serial.print(command);
-        Serial.print(", data: ");
-        Serial.println(incomingData);
-        
-      case 'i': incomingData = Serial.parseInt();
-        Serial.print("case: ");
-        Serial.print(command);
-        Serial.print(", data: ");
-        Serial.println(incomingData);
-        
-      case 'd': incomingData = Serial.parseInt();
-        Serial.print("case: ");
-        Serial.print(command);
-        Serial.print(", data: ");
-        Serial.println(incomingData);
-
-      default: 
-        Serial.print("Unexpected command: ");
-        Serial.println(command);
-    }
+  String s = command.substring(0, 1);      // slice out the first value of the command
+  incomingData = command.substring(1).toDouble();    // slice out the numerical data
+  
+  if (s == "p") {
+    Serial.print("case: ");
+    Serial.print(command);
+    Serial.print(", data: ");
+    Serial.println(incomingData);
+  } else if (s == "i") {
+    Serial.print("case: ");
+    Serial.print(command);
+    Serial.print(", data: ");
+    Serial.println(incomingData);
+  } else if (s == "d") {
+    Serial.print("case: ");
+    Serial.print(command);
+    Serial.print(", data: ");
+    Serial.println(incomingData);
+  } else {
+    Serial.print("Unexpected command: ");
+    Serial.println(command);
+  }
 }

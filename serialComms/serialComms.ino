@@ -1,6 +1,7 @@
 #define BAUDRATE 115200
 
 int x;
+String command = "";
 
 void setup() {
   Serial.begin(BAUDRATE);
@@ -8,7 +9,14 @@ void setup() {
 }
 
 void loop() {
-  while (!Serial.available());
-    x = Serial.readString().toInt();
-    Serial.print(x + 1);
+  if (Serial.available()) {
+    char ch = Serial.read();
+
+    if (ch == '\r') {
+      Serial.println(command);
+      command = "";
+    } else {
+      command += ch;
+    }
+  }
 }
