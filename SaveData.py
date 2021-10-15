@@ -1,4 +1,4 @@
-import serial       # requires PySerial to be downloaded
+from serial import Serial       # requires PySerial to be downloaded
 import os
 
 PORT = 'COM13'  # serial port for Arduino
