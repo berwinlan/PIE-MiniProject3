@@ -147,6 +147,11 @@ void parseData(String command) {
   } else if (s == "x") {
     Serial.println("Braking!");
     brake();
+  } else if (s == "q") {
+    Serial.println("Resetting!");
+    kp = 0;
+    ki = 0;
+    kd = 0;
   } else {
     Serial.print("Unexpected command: ");
     Serial.println(command);
