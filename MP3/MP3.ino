@@ -22,7 +22,7 @@ For use with the Adafruit Motor Shield v2
 
 #define INITIAL_SPEED 50   // initial speed of wheels at setup()
 
-#define THRESHOLD 300       // TODO, threshold of tape vs. floor
+#define THRESHOLD 350       // TODO, threshold of tape vs. floor
 
 // Initialize variables for serial reading
 String command = "";    // for incoming serial data
@@ -79,7 +79,8 @@ void setup() {
 }
 
 void loop() {
-  // Read data from serial monitor, with carriage return line ending
+  // Dynamically tune PID with the Serial Monitor
+  // Receive data from serial monitor in the form "letterValue" where letter = {p, i, d}
   if (Serial.available()) {
     char ch = Serial.read();
 
@@ -91,15 +92,9 @@ void loop() {
     }
   }
 
-//  receiveData();
-
-//  int leftSensorValue = analogRead(LEFT_SENSOR_PIN);
-//  int rightSensorValue = analogRead(RIGHT_SENSOR_PIN);
-//
-//  Serial.print("left sensor: ");
-//  Serial.print(leftSensorValue);
-//  Serial.print(", right sensor: ");
-//  Serial.println(rightSensorValue);
+  int leftSensorValue = analogRead(LEFT_SENSOR_PIN);
+  int rightSensorValue = analogRead(RIGHT_SENSOR_PIN);
+  printSensors(leftSensorValue, rightSensorValue);
 
   leftMotor->run(FORWARD);
   rightMotor->run(FORWARD);
@@ -122,48 +117,7 @@ double computePID(double input) {
   return diff;        // return PID output
 }
 
-// Dynamically tune PID with the Serial Monitor
-// Receive data in the form "letterNumber" where letter = {p, i, d}
-//void receiveData() {
-//  if (Serial.available() >= 2) {   // can change to Serial.available() >= {known input length}
-//    char letter = Serial.read();
-//    switch (letter) {
-//      case 'p': incomingData = Serial.parseInt();
-//        Serial.print("case: ");
-//        Serial.print(letter);
-//        Serial.print(", data: ");
-//        Serial.println(incomingData);
-//        
-//      case 'i': incomingData = Serial.parseInt();
-//        Serial.print("case: ");
-//        Serial.print(letter);
-//        Serial.print(", data: ");
-//        Serial.println(incomingData);
-//        
-//      case 'd': incomingData = Serial.parseInt();
-//        Serial.print("case: ");
-//        Serial.print(letter);
-//        Serial.print(", data: ");
-//        Serial.println(incomingData);
-//
-//      default: 
-//        Serial.print("Unexpected command: ");
-//        Serial.println(letter);
-//    }
-//  }
-//}
-//
-//void receiveData2() {
-//  if (Serial.available()) {
-//    char ch = Serial.read();
-//
-//    if (ch == '\r') {
-//      
-//    }
-//  }
-//}
-
-//// Helper function for receiveData
+// Helper function for receiveData
 void parseData(String command) {
   String s = command.substring(0, 1);      // slice out the first value of the command
   incomingData = command.substring(1).toDouble();    // slice out the numerical data
@@ -192,6 +146,7 @@ void parseData(String command) {
   }
 }
 
+// Brake the vehicle
 void brake() {
   // Set the speed to 0
   leftMotor->setSpeed(0);
@@ -203,4 +158,22 @@ void brake() {
   // turn on motors
   leftMotor->run(RELEASE);
   rightMotor->run(RELEASE);
+}
+
+// Analyze sensor values
+void printSensors(int left, int right) {
+  Serial.print("left sensor: ");
+  Serial.print(left);
+  if (left > THRESHOLD) {
+    Serial.print(" left on tape ");
+  } else {
+    Serial.print(" left on floor ");
+  }
+  Serial.print(" right sensor: ");
+  Serial.println(right);
+  if (right > THRESHOLD) {
+    Serial.print(" right on tape ");
+  } else {
+    Serial.print(" right on floor ");
+  }
 }
