@@ -1,9 +1,16 @@
-from serial import Serial       # requires PySerial to be downloaded
+import serial       # requires PySerial to be downloaded
 import os
+import calendar
+import time
 
 PORT = 'COM13'  # serial port for Arduino
 BAUD_RATE = 115200  # set baud rate matching serial monitor
-FILENAME = "driveData.csv"
+
+# get time
+gmt = time.gmtime()
+timestamp = calendar.timegm(gmt)
+
+FILENAME = f"{timestamp}_driveData.csv"
 
 ser = serial.Serial(PORT, BAUD_RATE)
 print(f"Connected at {PORT}!")
@@ -13,10 +20,19 @@ __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file
 
 # Create headings
 with open(os.path.join(__location__, FILENAME), 'w') as f:
-    f.write("heading1,heading2\n")
+    f.write("leftSensorData,rightSensorData,leftMotorData,rightSensorData\n")
 
-getData = str(ser.readline())
-# data = getData[0:-2]        # slice off EOF characters
+samples = 25    # how many samples to collect
+line = 0        # start at 0 because our header is 0 (not real data)
 
-with open(os.path.join(__location__, FILENAME), 'a') as f:
-    f.write(getData)
+while line <= samples:
+    getData = str(ser.readline())
+    data = getData[2:-5]        # slice off EOF characters (b' - \r\n')
+
+    if data != "Motor Shield found.":
+        with open(os.path.join(__location__, FILENAME), 'a') as f:
+            f.write(f"{data}\n")
+        print("Collecting data at row {line}...")
+        line += 1
+
+print(f"Data saved at {FILENAME}.")
