@@ -52,7 +52,6 @@ void setup() {
   Serial.begin(BAUD_RATE);           // set up Serial library
   Serial.setTimeout(1);
 
-
   // set up sensors - technically not necessary, since digital pins default to input
   pinMode(LEFT_SENSOR_PIN, INPUT);
   pinMode(RIGHT_SENSOR_PIN, INPUT);
@@ -94,7 +93,7 @@ void loop() {
 
   int leftSensorValue = analogRead(LEFT_SENSOR_PIN);
   int rightSensorValue = analogRead(RIGHT_SENSOR_PIN);
-  printSensors(leftSensorValue, rightSensorValue);
+//  printSensors(leftSensorValue, rightSensorValue);
 
   leftMotor->run(FORWARD);
   rightMotor->run(FORWARD);
@@ -123,19 +122,16 @@ void parseData(String command) {
   incomingData = command.substring(1).toDouble();    // slice out the numerical data
   
   if (s == "p") {
-    Serial.print("case: ");
-    Serial.print(command);
-    Serial.print(", data: ");
+    kp = incomingData;
+    Serial.print("kp set to ");
     Serial.println(incomingData);
   } else if (s == "i") {
-    Serial.print("case: ");
-    Serial.print(command);
-    Serial.print(", data: ");
+    ki = incomingData;
+    Serial.print("ki set to ");
     Serial.println(incomingData);
   } else if (s == "d") {
-    Serial.print("case: ");
-    Serial.print(command);
-    Serial.print(", data: ");
+    kd = incomingData;
+    Serial.print("kd set to ");
     Serial.println(incomingData);
   } else if (s == "x") {
     Serial.println("Braking!");
@@ -164,16 +160,17 @@ void brake() {
 void printSensors(int left, int right) {
   Serial.print("left sensor: ");
   Serial.print(left);
+  Serial.print(" right sensor: ");
+  Serial.println(right);
+  
   if (left > THRESHOLD) {
     Serial.print(" left on tape ");
   } else {
     Serial.print(" left on floor ");
   }
-  Serial.print(" right sensor: ");
-  Serial.println(right);
   if (right > THRESHOLD) {
-    Serial.print(" right on tape ");
+    Serial.println(" right on tape ");
   } else {
-    Serial.print(" right on floor ");
+    Serial.println(" right on floor ");
   }
 }
