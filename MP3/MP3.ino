@@ -22,7 +22,9 @@ For use with the Adafruit Motor Shield v2
 
 #define INITIAL_SPEED 50   // initial speed of wheels at setup()
 
-#define THRESHOLD 350       // TODO, threshold of tape vs. floor
+#define THRESHOLD 350       // threshold of tape vs. floor
+
+#define FREQ 1000         // data collection frequency (ms)
 
 // Initialize variables for serial reading
 String command = "";    // for incoming serial data
@@ -40,6 +42,9 @@ double currentError, previousError;
 
 // Track error
 double error, cumeError, rateError;
+
+// Global variables to store data
+int leftSensorValue, rightSensorValue, leftMotorValue, rightMotorValue;
 
 // Create the motor shield object with the default I2C address
 Adafruit_MotorShield AFMS = Adafruit_MotorShield();
@@ -91,9 +96,15 @@ void loop() {
     }
   }
 
-  int leftSensorValue = analogRead(LEFT_SENSOR_PIN);
-  int rightSensorValue = analogRead(RIGHT_SENSOR_PIN);
+  leftSensorValue = analogRead(LEFT_SENSOR_PIN);
+  rightSensorValue = analogRead(RIGHT_SENSOR_PIN);
 //  printSensors(leftSensorValue, rightSensorValue);
+
+  leftMotorValue = analogRead(LEFT_MOTOR_PIN);
+  rightMotorValue = analogRead(RIGHT_MOTOR_PIN);
+
+  serialDisplay(leftSensorValue, rightSensorValue, leftMotorValue, rightMotorValue);
+  delay(FREQ);
 
   leftMotor->run(FORWARD);
   rightMotor->run(FORWARD);
@@ -173,4 +184,15 @@ void printSensors(int left, int right) {
   } else {
     Serial.println(" right on floor ");
   }
+}
+
+// Print values to serial monitor
+void serialDisplay(int leftSensorValue, int rightSensorValue, int leftMotorValue, int rightMotorValue) {
+  Serial.print(leftSensorValue);
+  Serial.print(",");
+  Serial.print(rightSensorValue);
+  Serial.print(",");
+  Serial.print(leftMotorValue);
+  Serial.print(",");
+  Serial.println(rightMotorValue);
 }
