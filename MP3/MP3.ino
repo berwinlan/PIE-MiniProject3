@@ -183,8 +183,24 @@ void parseData(String command) {
     Serial.print(command);
     Serial.print(", data: ");
     Serial.println(incomingData);
+  } else if (s == "x") {
+    Serial.println("Braking!");
+    brake();
   } else {
     Serial.print("Unexpected command: ");
     Serial.println(command);
   }
+}
+
+void brake() {
+  // Set the speed to 0
+  leftMotor->setSpeed(0);
+  rightMotor->setSpeed(0);
+
+  leftMotor->run(FORWARD);
+  rightMotor->run(FORWARD);
+  
+  // turn on motors
+  leftMotor->run(RELEASE);
+  rightMotor->run(RELEASE);
 }
