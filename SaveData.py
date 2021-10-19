@@ -22,7 +22,7 @@ __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file
 with open(os.path.join(__location__, FILENAME), 'w') as f:
     f.write("leftSensorData,rightSensorData,leftMotorData,rightSensorData\n")
 
-samples = 60000    # how many samples to collect
+samples = 4000    # how many samples to collect
 line = 0        # start at 0 because our header is 0 (not real data)
 
 while line <= samples:
@@ -32,7 +32,7 @@ while line <= samples:
     if data != "Motor Shield found.":
         with open(os.path.join(__location__, FILENAME), 'a') as f:
             f.write(f"{data}\n")
-        print("Collecting data at row {line}...")
+        print(f"Collecting data at row {line}...")
         line += 1
 
 print(f"Data saved at {FILENAME}.")

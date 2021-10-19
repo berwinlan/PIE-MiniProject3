@@ -11,7 +11,6 @@
 // Global variables to store data
 int leftSensorValue, rightSensorValue, leftMotorValue, rightMotorValue;
 
-
 // Initialize variables for serial reading
 String command = "";    // for incoming serial data
 double incomingData;    
