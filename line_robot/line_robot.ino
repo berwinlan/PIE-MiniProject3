@@ -8,6 +8,9 @@
 #define LEFT_SENSOR_PIN A1    // Set left sensor to analog pin 1
 #define RIGHT_SENSOR_PIN A0   // Set right sensor to analog pin 0
 
+// Global variables to store data
+int leftSensorValue, rightSensorValue, leftMotorValue, rightMotorValue;
+
 
 // Initialize variables for serial reading
 String command = "";    // for incoming serial data
@@ -34,8 +37,6 @@ int error, previousError; // Track current and previous errors
 double PID = 0.0; // Initialize PID for control loop 
 double cumeError, rateError; 
 
-
-
 // Create the motor shield object with the default I2C address
 Adafruit_MotorShield AFMS = Adafruit_MotorShield();
 
@@ -60,15 +61,13 @@ void setup() {
   previousTime = millis(); // Get the current value of the millis timer
   previousError = 0;
 
-  delay(10000); // Delay so that the robot does not start moving right away
+  delay(5000); // Delay so that the robot does not start moving right away
   // Set the speed to start, from 0 (off) to 255 (max speed)
   leftMotor->setSpeed(INITIAL_SPEED-3); // Subtract by 3 do to unequal motor speeds
   rightMotor->setSpeed(INITIAL_SPEED);
 
   leftMotor->run(FORWARD);
   rightMotor->run(FORWARD);
-  
-
 }
 
 void loop() {
@@ -84,6 +83,15 @@ void loop() {
       command += ch;
     }
   }
+
+  leftSensorValue = analogRead(LEFT_SENSOR_PIN);
+  rightSensorValue = analogRead(RIGHT_SENSOR_PIN);
+
+  leftMotorValue = analogRead(LEFT_MOTOR_PIN);
+  rightMotorValue = analogRead(RIGHT_MOTOR_PIN);
+
+  serialDisplay(leftSensorValue, rightSensorValue, leftMotorValue, rightMotorValue);
+
 
   // Define sensor values as 1 if they are greater than the threshold
   //    meaning that the sensor is reading the tape. Define sensor values
@@ -188,4 +196,16 @@ void printSensors(int left, int right) {
   } else {
     Serial.println(" right on floor ");
   }
+}
+
+
+// Print values to serial monitor
+void serialDisplay(int leftSensorValue, int rightSensorValue, int leftMotorValue, int rightMotorValue) {
+  Serial.print(leftSensorValue);
+  Serial.print(",");
+  Serial.print(rightSensorValue);
+  Serial.print(",");
+  Serial.print(leftMotorValue);
+  Serial.print(",");
+  Serial.println(rightMotorValue);
 }

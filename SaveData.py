@@ -22,7 +22,7 @@ __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file
 with open(os.path.join(__location__, FILENAME), 'w') as f:
     f.write("leftSensorData,rightSensorData,leftMotorData,rightSensorData\n")
 
-samples = 25    # how many samples to collect
+samples = 60000    # how many samples to collect
 line = 0        # start at 0 because our header is 0 (not real data)
 
 while line <= samples:
