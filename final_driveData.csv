@@ -1,5 +1,5 @@
-leftSensorData,rightSensorData,leftMotorData,rightSensorData
-
+leftSensorData,rightSensorData,leftMotorData,rightMotorData
+,,,
 385,588,593,576
 431,565,578,573
 471,497,536,552
@@ -5277,4 +5277,3 @@ leftSensorData,rightSensorData,leftMotorData,rightSensorData
 371,521,515,507
 401,512,511,507
 430,510,509,507
-
